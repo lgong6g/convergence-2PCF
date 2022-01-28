@@ -113,11 +113,10 @@ c2 = 1.0861e-2
 
 halofit_version = "halofit"
 kmax = 30.0
-#number of source redshifts
-n = 1
 # source redshift bins
 zs = [0.993] #for MICE simulation
-
+#number of source redshifts
+n = len(zs)
 
 ########Input parameters#######
 
@@ -179,10 +178,14 @@ else:
                   'write warnings':'yes'
                  }
 
+start_cosmo = time.time()
 
 Nu_Cosmo = Class()
 Nu_Cosmo.set(commonsettings)
 Nu_Cosmo.compute()
+
+end_cosmo = time.time()
+print('\nTime taken for computing CLASS object (seconds): ', end_cosmo - start_cosmo)
 
 
 #### Section 1 ######
@@ -281,16 +284,17 @@ def boxsize_correct(l, z):
 path1 = "mice_pk2d/"
 path2 = "mice_2pcf_kappa/"
 
-os.mkdir(path1)
-os.mkdir(path2)
+#os.mkdir(path1)
+#os.mkdir(path2)
  
 ##### Compute convergence power spectrum for multiple source redshifts ########
 Pk2D = np.zeros((len(l), n+1))
 Pk2D[:,0] = l
 
 for i in range(1, len(zs)+1):
-    print(zs[i-1])
-    pool = mp.Pool(processes=30)
+    #print(zs[i-1])
+    #the local laptop has 16 CPU in total, the number of processes can be adapted according to need
+    pool = mp.Pool(processes=8)
     result = pool.map(Pk_2D_integral_parallelisation, [[l[j], zs[i-1]] for j in range(len(l))])
     Pk2D[:,i] = np.array(result)
 
