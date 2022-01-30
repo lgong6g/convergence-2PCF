@@ -431,7 +431,7 @@ p0[:,2] = theta3_0
 nwalkers, ndim = p0.shape 
 
 
-filename = "MCMC_results/MCMC_%swalkers_z%s_LSST_binave.h5"%(nwalkers, z_source)
+filename = "MCMC_%swalkers_z%s_LSST_binave.h5"%(nwalkers, z_source)
 #filename = "MCMC_%swalkers_z%s_LSST_binave_tomography.h5"%(nwalkers, z_source)
 backend = emcee.backends.HDFBackend(filename)
 backend.reset(nwalkers, ndim)
