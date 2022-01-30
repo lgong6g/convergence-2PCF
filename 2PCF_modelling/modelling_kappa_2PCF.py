@@ -350,8 +350,8 @@ for i in range(len(pk2D_new[0,:])-1):
     coeff1 = np.zeros(len(l1)+1)
     coeff2 = np.zeros(len(l1)-1)
     for j in range(len(r)):
-        x_max = np.cos(np.radians(r_max * 1/60))
-        x_min = np.cos(np.radians(r_min * 1/60))
+        x_max = np.cos(np.radians(r_max[j] * 1/60))
+        x_min = np.cos(np.radians(r_min[j] * 1/60))
         coeff1[1:] = 1/(4*np.pi*(x_max - x_min)) * pk
         coeff2 = 1/(4*np.pi*(x_max - x_min)) * pk[1:]
         corr_2pt[j,i+1] = np.polynomial.legendre.legval(x_max, coeff1) - np.polynomial.legendre.legval(x_max, coeff2) - np.polynomial.legendre.legval(x_min, coeff1) + np.polynomial.legendre.legval(x_min, coeff2)
