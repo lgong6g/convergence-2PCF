@@ -394,10 +394,10 @@ def log_probability(theta, data, cov):
     return lp + log_likelihood(theta, data, cov)
 
 # Read in and compute the data vector from noiseless simulation maps
-data_vec = pd.read_csv('correlationfunc/2ptfunc_circpatch/2pt_mnv0.1_om0.3_As2.1_z1.5_relizations9999_circular.csv', sep=' ')
+data_vec = pd.read_csv('../example_data/massivenus_2pt_z1.0_noiseless_1e4realizations.csv.csv', sep=' ')
 '''
-data_vec2 = pd.read_csv('correlationfunc/2ptfunc_circpatch/2pt_mnv0.1_om0.3_As2.1_z1.5_relizations9999_circular.csv', sep=' ')
-data_vec3 = pd.read_csv('correlationfunc/2ptfunc_circpatch/2pt_cross_mnv0.1_om0.3_As2.1_z11.0_z21.5_relizations10000_circular.csv', sep=' ')
+data_vec2 = pd.read_csv('../example_data/massivenus_2pt_z1.5_noiseless_1e4realizations.csv.csv', sep=' ')
+data_vec3 = pd.read_csv('../example_data/massivenus_cross2pt_noiseless_1e4realizations.csv', sep=' ')
 data_vec = pd.concat([data_vec, data_vec2, data_vec3], axis=1)
 '''
 data_vec = data_vec.iloc[:4999,:]
@@ -406,10 +406,10 @@ data_vec = np.mean(data_vec, axis=0)
 
 # Read in and compute the data covariance matrix from noisy simulation maps
 # We choose a separate set of simulation realizations to calculate the covariance matrix in order to avoid the dependence between the data vector and the covariance matrix  
-corr2pt = pd.read_csv('correlationfunc/2ptfunc_circpatch_wn/2pt_mnv0.1_om0.3_As2.1_z1.5_relizations10000_circular_LSST_whitenoise.csv', sep=' ')
+corr2pt = pd.read_csv('../example_data/massivenus_2pt_z1.0_noisy_1e4realizations.csv.csv', sep=' ')
 '''
-corr2pt2 = pd.read_csv('correlationfunc/2ptfunc_circpatch_wn/2pt_mnv0.1_om0.3_As2.1_z1.5_relizations10000_circular_LSST.csv', sep=' ')
-corr2pt3 = pd.read_csv('correlationfunc/2ptfunc_circpatch_wn/2pt_cross_mnv0.1_om0.3_As2.1_z11.0_z21.5_relizations10000_circular_LSST.csv', sep=' ') 
+corr2pt2 = pd.read_csv('../example_data/massivenus_2pt_z1.5_noisy_1e4realizations.csv.csv', sep=' ')
+corr2pt3 = pd.read_csv('../example_data/massivenus_cross2pt_noisy_1e4realizations.csv', sep=' ') 
 corr2pt = pd.concat([corr2pt, corr2pt2, corr2pt3], axis=1)
 '''
 corr2pt = corr2pt.iloc[4999:,:]
@@ -431,7 +431,7 @@ p0[:,2] = theta3_0
 nwalkers, ndim = p0.shape 
 
 
-filename = "MCMC_%swalkers_z%s_LSST_binave.h5"%(nwalkers, z_source)
+filename = "MCMC_results/MCMC_%swalkers_z%s_LSST_binave.h5"%(nwalkers, z_source)
 #filename = "MCMC_%swalkers_z%s_LSST_binave_tomography.h5"%(nwalkers, z_source)
 backend = emcee.backends.HDFBackend(filename)
 backend.reset(nwalkers, ndim)
