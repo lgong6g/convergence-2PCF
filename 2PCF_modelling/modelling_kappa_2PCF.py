@@ -1,9 +1,10 @@
 import time
 start_program = time.time()
 
+import os
+import itertools
 import numpy as np
 import pandas as pd
-import os
 import astropy.units as u
 import multiprocessing as mp
 from scipy.optimize import fsolve
@@ -11,6 +12,7 @@ from scipy import integrate
 from scipy import interpolate
 from classy import Class
 from astropy.cosmology import FlatLambdaCDM
+from math import comb
 
 '''
 #### input from keyboard ####
@@ -103,7 +105,7 @@ n_s = 0.97 #n_s value for MassiveNuS
 h = 0.7
 Lbox = 512/h #simulaion box size in Mpc
 
-##shell-correction fitting parameters##
+##shell-correction fitting parameters for MassiveNuS##
 a1 = 1.3606
 a2 = 1.2674
 a3 = 0.7028
@@ -114,7 +116,7 @@ c2 = 1.0861e-2
 halofit_version = "halofit"
 kmax = 30.0
 # source redshift bins
-zs = [0.993] #for MICE simulation
+zs = [0.993, 1.5, 2.0] #for MICE simulation
 #number of source redshifts
 n = len(zs)
 
@@ -272,6 +274,44 @@ def Pk_2D_integral_parallelisation(p):
 '''    
 
 '''
+#### Section 4 ######
+# In this part of the code, we adopt the fitting formula for the shell-thickness effect from Takahashi et al. 2017 
+# and compute the convergence cross power spectrum between two tomographic source redshift bins
+def rz(z):
+    return Nu_Cosmo.angular_distance(z)*(1+z)
+
+
+def P_NL(k, z):
+    # we do not compute matter power spectrum at scales smaller than the limit set by kmax
+    if k > kmax: 
+        return 0
+    else:
+        return Nu_Cosmo.pk(k, z) 
+
+# Apply the simulation shell correction
+#def PW_NL(k, z):
+#    return  (1 + c1*(k/h)**(-a1))**(a1)/(1 + c2*(k/h)**(-a2))**(a3) * P_NL(k, z)
+
+# Lensing kernel in the line-of-sight projection
+# For tomography, the integrated redshift cannot exceed the smaller source redshift value
+def q(z, z_s):
+    lensing_kernel = (3.0/2.0) * (Nu_Cosmo.Hubble(0.0))**2 * Nu_Cosmo.Omega0_m() * (rz(z_s)-rz(z))*rz(z)/rz(z_s) * (1+z)
+    if z > z_s:
+        return 0.0
+    else:
+        return lensing_kernel
+
+def Pk_2D_integral(l, z_s1, z_s2):
+    dPk_2D = lambda z : (1/Nu_Cosmo.Hubble(z)) * q(z, z_s1) * q(z, z_s2)/rz(z)**2 * P_NL(l/rz(z), z)  
+    Pk_2D = integrate.quad(dPk_2D, 0., z_s2)[0]
+    return Pk_2D
+
+def Pk_2D_integral_parallelisation(p):
+    return Pk_2D_integral(p[0], p[1], p[2])
+#############
+'''
+
+'''
 #a piece of code for boxsize correction
 def boxsize_correct(l, z):
     if l/rz(z) < 2*np.pi/Lbox:
@@ -286,20 +326,42 @@ path2 = "mice_2pcf_kappa/"
 
 #os.mkdir(path1)
 #os.mkdir(path2)
- 
-##### Compute convergence power spectrum for multiple source redshifts ########
+
+
+##### Compute convergence auto power spectrum for multiple source redshifts ########
 Pk2D = np.zeros((len(l), n+1))
 Pk2D[:,0] = l
 
 for i in range(1, len(zs)+1):
-    #print(zs[i-1])
+    print("convergence power spectrum at source redshift: %s"%(zs))
     #the local laptop has 16 CPU in total, the number of processes can be adapted according to need
     pool = mp.Pool(processes=8)
     result = pool.map(Pk_2D_integral_parallelisation, [[l[j], zs[i-1]] for j in range(len(l))])
     Pk2D[:,i] = np.array(result)
 
+
+'''
+#### Compute convergence cross power spectrum  for multipole source redshifts ####
+#### First compute how many combinations are there in a list of source redshifts ####
+columns = comb(n, 2)
+Pk2D = np.zeros((len(l), columns+1))
+Pk2D[:,0] = l
+
+i = 1
+for tomo_bins in itertools.combinations(zs, 2):
+    zs1 = tomo_bins[0]
+    zs2 = tomo_bins[1]
+    print("convergence cross power spectrum at z1 = %s and z2 = %s"%(zs1, zs2))
+    #the local laptop has 16 CPU in total, the number of processes can be adapted according to need
+    pool = mp.Pool(processes=8)
+    result = pool.map(Pk_2D_integral_parallelisation, [[l[j], zs1, zs2] for j in range(len(l))])
+    Pk2D[:,i] = np.array(result)
+    i += 1
+'''
+
 Pk2D_data = pd.DataFrame(Pk2D)
 Pk2D_data.to_csv(path1+'pk2d_zs%sbins.csv'%(n), sep=' ', index=False)
+#Pk2D_data.to_csv(path1+'pk2d_cross_zs%sbins.csv'%(n), sep=' ', index=False)
 
 end_pk2d = time.time()
 print('\nTime taken for computing power spectrum (seconds): ', end_pk2d - start_program)
@@ -359,6 +421,7 @@ for i in range(len(pk2D_new[0,:])-1):
 
 corr_2pt = pd.DataFrame(corr_2pt)
 corr_2pt.to_csv(path2+"2pcf_zs%sbins.csv"%(n), sep=' ', index=False)
+#corr_2pt.to_csv(path2+"2pcf_cross_zs%sbins.csv"%(n), sep=' ', index=False)
 
 end_program = time.time()
 print('\nTime taken for execution (seconds): ', end_program - start_program)
