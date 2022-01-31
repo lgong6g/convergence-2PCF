@@ -4,4 +4,4 @@ A summary of codes in python used in my master thesis project calculating auto/c
 There is also a jupyter notebook for computing Fisher analysis.
 
 ## example_data
-Files in this folder are measurements from MassiveNuS convergence maps and can be used as an example in 
+Files in this folder are measurements from MassiveNuS convergence maps and can be used as an example in dem
