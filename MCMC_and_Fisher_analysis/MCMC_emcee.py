@@ -168,7 +168,7 @@ class class_obj:
                   'Omega_scf': 0.0,          
                   'YHe':0.24, #'BBN', 0.24 Liu's input
                   'z_max_pk':3.5,
-                  'nonlinear_verbose':10,
+                  #'nonlinear_verbose':10,
                   'non linear':nonlinear_model,
                   'write warnings':'yes'
                  }
