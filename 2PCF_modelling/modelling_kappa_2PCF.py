@@ -97,7 +97,6 @@ sigma8 = 0.8
 n_s = 0.95
 Mv = 0.0
 
-
 '''
 ### MassiveNuS cosmology ###
 omega_b = 0.02254  #Liu's input, we have 0.02254 and 0.02254 is also the value in Takahashi simulation
@@ -333,7 +332,7 @@ Pk2D = np.zeros((len(l), n+1))
 Pk2D[:,0] = l
 
 for i in range(1, len(zs)+1):
-    print("convergence power spectrum at source redshift: %s"%(zs))
+    print("convergence power spectrum at source redshift: %s"%(zs[i-1]))
     #the local laptop has 16 CPU in total, the number of processes can be adapted according to need
     pool = mp.Pool(processes=8)
     result = pool.map(Pk_2D_integral_parallelisation, [[l[j], zs[i-1]] for j in range(len(l))])
