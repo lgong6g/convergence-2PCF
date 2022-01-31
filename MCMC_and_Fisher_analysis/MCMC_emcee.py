@@ -394,9 +394,9 @@ def log_probability(theta, data, cov):
     return lp + log_likelihood(theta, data, cov)
 
 # Read in and compute the data vector from noiseless simulation maps
-data_vec = pd.read_csv('../example_data/massivenus_2pt_z1.0_noiseless_1e4realizations.csv.csv', sep=' ')
+data_vec = pd.read_csv('../example_data/massivenus_2pt_z1.0_noiseless_1e4realizations.csv', sep=' ')
 '''
-data_vec2 = pd.read_csv('../example_data/massivenus_2pt_z1.5_noiseless_1e4realizations.csv.csv', sep=' ')
+data_vec2 = pd.read_csv('../example_data/massivenus_2pt_z1.5_noiseless_1e4realizations.csv', sep=' ')
 data_vec3 = pd.read_csv('../example_data/massivenus_cross2pt_noiseless_1e4realizations.csv', sep=' ')
 data_vec = pd.concat([data_vec, data_vec2, data_vec3], axis=1)
 '''
@@ -406,9 +406,9 @@ data_vec = np.mean(data_vec, axis=0)
 
 # Read in and compute the data covariance matrix from noisy simulation maps
 # We choose a separate set of simulation realizations to calculate the covariance matrix in order to avoid the dependence between the data vector and the covariance matrix  
-corr2pt = pd.read_csv('../example_data/massivenus_2pt_z1.0_noisy_1e4realizations.csv.csv', sep=' ')
+corr2pt = pd.read_csv('../example_data/massivenus_2pt_z1.0_noisy_1e4realizations.csv', sep=' ')
 '''
-corr2pt2 = pd.read_csv('../example_data/massivenus_2pt_z1.5_noisy_1e4realizations.csv.csv', sep=' ')
+corr2pt2 = pd.read_csv('../example_data/massivenus_2pt_z1.5_noisy_1e4realizations.csv', sep=' ')
 corr2pt3 = pd.read_csv('../example_data/massivenus_cross2pt_noisy_1e4realizations.csv', sep=' ') 
 corr2pt = pd.concat([corr2pt, corr2pt2, corr2pt3], axis=1)
 '''
