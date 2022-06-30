@@ -130,7 +130,7 @@ class class_obj:
                   'omega_b':omega_b,
                   'h':h,
                   'n_s':n_s,
-                  'A_s':self.As, 
+                  'A_s':self.As * 1e-9, 
                   #'sigma8': sigma8,
                   'omega_cdm':self.Omega_m*(h**2)-omega_b, #0.12470 Liu's input for massless neutrino and Omega_m=0.3 case 
                   #'omega_cdm': omega_cdm,
@@ -161,7 +161,7 @@ class class_obj:
                   'm_ncdm':str(m1)+','+str(m2)+','+str(m3),
                   'h':h,
                   'n_s':n_s,
-                  'A_s':self.As, 
+                  'A_s':self.As * 1e-9, 
                   #'sigma8': sigma8,
                   'Omega_k':0.0,
                   'Omega_fld': 0.0,
